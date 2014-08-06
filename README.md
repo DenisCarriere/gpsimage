@@ -16,6 +16,15 @@ With tons of ``help`` & ``debug`` commands!
 $ pip install gpsimage
 ```
 
+## GPS-Camera Devices
+
+The following GPS-Camera devices have been tested with this python code.
+
+If your device is not listed, feel free to send me a photo taken from your device and I will be glad troubleshoot it.
+
+- [Garmin Montana 650](http://sites.garmin.com/montana/)
+- [Android Samsung Galaxy](http://www.samsung.com/us/topic/our-galaxy-smartphones)
+
 ## Python Example
 
 ```python
@@ -44,6 +53,8 @@ This example was taken from a Android Samsung Galaxy
 >>> import gpsimage # pip install gpsimage
 >>> img = gpsimage.open('<image.jpg>')
 >>> img.json
+
+# JSON Results
 {'altitude': 79.0,
 'datum': 'WGS-84',
 'direction': 321.0,
@@ -79,5 +90,4 @@ This example was taken from a Android Samsung Galaxy
 - **height** - Dimension of image (Pixels)
 
 ## Functions
-
 - **debug** - Generates a report of all the attributes available
