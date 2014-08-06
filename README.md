@@ -36,6 +36,29 @@ $ pip install gpsimage
 ...
 ```
 
+## JSON Results
+
+This example was taken from a Android Samsung Galaxy
+
+```python
+>>> import gpsimage # pip install gpsimage
+>>> img = gpsimage.open('<image.jpg>')
+>>> img.json
+```
+```json
+{'altitude': 79.0,
+'datum': 'WGS-84',
+'direction': 321.0,
+'geometry': {'coordinates': [-76.4515263888889, 44.24509527777778],
+'type': 'POINT'},
+'height': 2592,
+'make': u'Samsung',
+'model': u'Galaxy Nexus',
+'status': 'OK',
+'timestamp': u'2014:08:06 15:29:41',
+'width': 1944}
+```
+
 ## Attributes
 
 ### GPS data
@@ -60,23 +83,3 @@ $ pip install gpsimage
 ## Functions
 
 - **debug** - Generates a report of all the attributes available
-
-
-## JSON Results
-
-This example was taken from a Android Samsung Galaxy
-
-```json
-{
-'altitude': 79.0,
-'datum': 'WGS-84',
-'direction': 321.0,
-'geometry': {'coordinates': [-76.4515263888889, 44.24509527777778],
-'type': 'POINT'},
-'height': 2592,
-'make': u'Samsung',
-'model': u'Galaxy Nexus',
-'status': 'OK',
-'timestamp': u'2014:08:06 15:29:41',
-'width': 1944
-}
