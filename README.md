@@ -38,12 +38,45 @@ $ pip install gpsimage
 
 ## Attributes
 
-- **lat** - Latitude (Degrees)
-- **lng** - Longitude (Degrees)
+### GPS data
+- **lat** or **y** - Latitude (Degrees)
+- **lng** or **x** - Longitude (Degrees)
+- **geometry** - GeoJSON Point
 - **altitude** - Elevation Above Mean Sea Level
 - **datum** - Coordinate system (Typically WGS84)
+- **direction** - Camera orientation (0-360 degrees)
 - **ok** - True or False if coordinates exists
+
+### Device Specific
+- **timestamp ** - Calendar dates (YYYY-MM-DD HH:MM:SS)
+- **model** - Device model (Galaxy Nexus)
+- **make** - Device manufacturer (Samsung)
+
+### Standard
+- **status** - Checks if everything is ok
+- **width** - Dimension of image (Pixels)
+- **height** - Dimension of image (Pixels)
 
 ## Functions
 
 - **debug** - Generates a report of all the attributes available
+
+
+## JSON Results
+
+This example was taken from a Android Samsung Galaxy
+
+```json
+{
+'altitude': 79.0,
+'datum': 'WGS-84',
+'direction': 321.0,
+'geometry': {'coordinates': [-76.4515263888889, 44.24509527777778],
+'type': 'POINT'},
+'height': 2592,
+'make': u'Samsung',
+'model': u'Galaxy Nexus',
+'status': 'OK',
+'timestamp': u'2014:08:06 15:29:41',
+'width': 1944
+}

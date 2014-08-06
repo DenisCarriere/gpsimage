@@ -5,7 +5,7 @@ import gpsimage
 import pytest
 import unittest
 
-path = 'test_image.jpg'
+path = 'gpsimage\\images\\test_image_garmin_montana_650.jpg'
 
 def test_entry_points():
     gpsimage.open
