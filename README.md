@@ -13,27 +13,27 @@ With tons of ``help`` & ``debug`` commands!
 **Requires** PIL module installed, for issues with Windows try to download Pillow. 
 
 ```bash
-    $pip install gpsimage
+$ pip install gpsimage
 ```
 
 ## Python Example
 
 ```python
-    >>> import gpsimage # pip install gpsimage
-    >>> img = gpsimage.open('<image.jpg>')
-    
-    # Coordinates Latitude & Longitude in Degrees 
-    >>> img.lat, img.lng
-    45.413140 -75.656703
+>>> import gpsimage # pip install gpsimage
+>>> img = gpsimage.open('<image.jpg>')
 
-    # Altitude in Feet
-    >>> img.altitude
-    142.04025779
-    
-    # From 0 to 360 Degrees
-    >>> img.direction
-    165.974436341
-    ...
+# Coordinates Latitude & Longitude in Degrees 
+>>> img.lat, img.lng
+45.413140 -75.656703
+
+# Altitude in Feet
+>>> img.altitude
+142.04025779
+
+# From 0 to 360 Degrees
+>>> img.direction
+165.974436341
+...
 ```
 
 ## Attributes
