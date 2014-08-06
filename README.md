@@ -44,8 +44,6 @@ This example was taken from a Android Samsung Galaxy
 >>> import gpsimage # pip install gpsimage
 >>> img = gpsimage.open('<image.jpg>')
 >>> img.json
-```
-```json
 {'altitude': 79.0,
 'datum': 'WGS-84',
 'direction': 321.0,
