@@ -6,7 +6,8 @@ GPS Image will contain all the geo-referenced information from an image.
 
 Every task is made easy! 
 
-With tons of ``help`` & ``debug`` commands!
+![GPSImage](https://raw.githubusercontent.com/DenisCarriere/gpsimage/master/gpsimage/images/gpsimage.jpg)
+
 
 ## Install
 
