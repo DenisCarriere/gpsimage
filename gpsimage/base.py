@@ -40,13 +40,21 @@ class GPSImage(object):
         self._GPSInfo = self._exif.get(self._TAGS.get('GPSInfo'))
 
     def __repr__(self):
-        return '<{0} [{1}, {2} ({3})]>'.format(self._basename, self.lat, self.lng, self.datum)
+        if self.ok:
+            return '<{0} [{1}, {2} ({3})]>'.format(self._basename, self.lat, self.lng, self.datum)
+        else:
+            return '<{0} [{1}>'.format(self._basename, self.status)
 
     def __getattr__(self, key):
         if 'GPS' in key:
-            return self._GPSInfo.get(self._GPSTAGS.get(key))
+            value = self._GPSInfo.get(self._GPSTAGS.get(key))
         else:
-            return self._exif.get(self._TAGS.get(key))
+            value = self._exif.get(self._TAGS.get(key))
+        # Remove extra spaces from strings
+        
+        if isinstance(value, (str,unicode)):
+            value = value.strip()
+        return value
 
     def _invert(self, tags):
         container = dict()
@@ -72,22 +80,24 @@ class GPSImage(object):
             return {}
             
     def _divide(self, items):
-        if len(items) == 2:
-            try:
-                return float(items[0]) / float(items[1])
-            except:
-                raise TypeError('Lat & Lng not available')
+        if items:
+            if len(items) == 2:
+                if bool(items[0] or items[1]):
+                    return float(items[0]) / float(items[1])
+                else:
+                    return 0.0
 
     def _dms_to_dd(self, dms, ref):
-        degrees = self._divide(dms[0])
-        minutes = self._divide(dms[1]) / 60
-        seconds = self._divide(dms[2]) / 60 / 60
-        dd = degrees + minutes + seconds
+        if len(dms) == 3:
+            degrees = self._divide(dms[0])
+            minutes = self._divide(dms[1]) / 60
+            seconds = self._divide(dms[2]) / 60 / 60
+            dd = degrees + minutes + seconds
 
-        # South & West returns Negative values
-        if ref in ['S', 'W']:
-            dd *= -1
-        return dd
+            # South & West returns Negative values
+            if ref in ['S', 'W']:
+                dd *= -1
+            return dd
 
     def _pretty(self, key, value, special=''):
         if special:
@@ -126,6 +136,23 @@ class GPSImage(object):
             return 'ERROR - No Geometry'
         else:
             return 'OK'
+
+    @property
+    def dpi(self):
+        value = self._image.info.get('dpi')
+        if value:
+            if len(value) == 2:
+                if bool(value[0] and value[1]):
+                    return value
+                # If both values are (0, 0) then change it to the standard 72DPI
+                else:
+                    return (72, 72)
+        else:
+            # Retrieves X & Y resolution from Exif instead of PIL Image
+            x = self._divide(self.XResolution)
+            y = self._divide(self.YResolution)
+            if bool(x and y):
+                return (int(x), int(y))
 
     @property
     def ok(self):
@@ -190,9 +217,19 @@ class GPSImage(object):
         return self._image.size[1]
 
     @property
+    def size(self):
+        if bool(self.height and self.width):
+            return (self.width, self.height)
+
+    @property
     def geometry(self):
         if self.ok:
             return {'type':'POINT', 'coordinates':[self.lng, self.lat]}
+
+    @property
+    def satellites(self):
+        if self.GPSSatellites:
+            return int(self.GPSSatellites)
 
     @property
     def json(self):
@@ -205,5 +242,6 @@ class GPSImage(object):
         return container
 
 if __name__ == '__main__':
-    img = GPSImage('images/test_image_android_samsung_galaxy.jpg')
+    img = GPSImage('images/garmin_montana_650.JPG')
+    print(img)
     img.debug()
