@@ -1,12 +1,10 @@
 # GPSImage Library
 
-Retrieves GPS data from Geo-referenced.
+Retrieves GPS data from Geo-referenced Photos.
 
-GPS Image will contain all the geo-referenced information from an image.
+GPS Image will find all available geo-referenced information from the image.
 
-Every task is made easy! 
-
-With tons of ``help`` & ``debug`` commands!
+Every task is made easy!
 
 ## Install
 
