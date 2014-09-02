@@ -26,16 +26,20 @@ class GPSImage(object):
     _errors = []
     _exif = {}
 
-    def __init__(self, path):
-        self.path = os.path.abspath(path)
-        self._basename = os.path.basename(self.path)
-
-        # Exif Tags            
+    def __init__(self, path_or_image_data="", is_image_data=False):
+        # Exif Tags
         self._TAGS = self._invert(TAGS)
         self._GPSTAGS = self._invert(GPSTAGS)
 
+        if not is_image_data:
+            self.path = os.path.abspath(path_or_image_data)
+            self._basename = os.path.basename(self.path)
+            self._image = self._open_image(self.path)
+        else:
+            # Directly open image from BytesIO stream.
+            self._image = Image.open(path_or_image_data, "r")
+
         # Initial Functions
-        self._image = self._open_image(self.path)
         self._exif = self._open_exif(self._image)
         self._GPSInfo = self._exif.get(self._TAGS.get('GPSInfo'))
 
@@ -51,7 +55,7 @@ class GPSImage(object):
         else:
             value = self._exif.get(self._TAGS.get(key))
         # Remove extra spaces from strings
-        
+
         if isinstance(value, (str,unicode)):
             value = value.strip()
         return value
