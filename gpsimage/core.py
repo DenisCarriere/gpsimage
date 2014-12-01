@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import time
 import datetime
@@ -7,14 +8,27 @@ import exifread
 
 class GPSImage(object):
     """
+    GPS Image Class will contain all the geo-referenced information from the image.
+    
+    @Attributes
+    lat - Latitude (Degrees)
+    lng - Longitude (Degrees)
+    altitude - Elevation Above Mean Sea Level
+    datum - Coordinate system (Typically WGS84)
+    ok - True or False if coordinates exists
+
+    @Functions
+    debug - Generates a report of all the attributes available
     """
-    _exclude = ['lat', 'lng','debug','json','ok', 'help', 'x', 'y', 'path','exif', 'image']
-    exif = {}
+    _exclude = ['lat', 'lng','debug','json','ok', 'help', 'x', 'y', 'path']
+    _GPSInfo = {}
+    _errors = []
+    _exif = {}
 
     def __init__(self, image):
         if isinstance(image, str):
             self.path = os.path.abspath(image)
-            self.filename = os.path.basename(self.path)
+            self.basename = os.path.basename(self.path)
             self.image = open(self.path)
         else:
             self.image = image
@@ -24,19 +38,26 @@ class GPSImage(object):
 
     def __repr__(self):
         if self.ok:
-            return '<GPSImage - {0} [{1}, {2} ({3})]>'.format(self.filename, self.lat, self.lng, self.datum)
+            return '<GPSImage - {0} [{1}, {2} ({3})]>'.format(self.basename, self.lat, self.lng, self.datum)
         else:
             return '<GPSImage [{1}]>'.format(self.status)
 
     def _read_exif(self):
-        self.exif = exifread.process_file(self.image)
+        exifread.process_file(self.image)
 
+    def _divide(self, items):
+        if items:
+            if len(items) == 2:
+                if bool(items[0] or items[1]):
+                    return float(items[0]) / float(items[1])
+                else:
+                    return 0.0
 
     def _dms_to_dd(self, dms, ref):
         if len(dms) == 3:
-            degrees = dms[0].num
-            minutes = dms[1].num / 60.0
-            seconds = float(dms[2].num) / float(dms[2].den) / 60.0 / 60.0
+            degrees = self._divide(dms[0])
+            minutes = self._divide(dms[1]) / 60
+            seconds = self._divide(dms[2]) / 60 / 60
             dd = degrees + minutes + seconds
 
             # South & West returns Negative values
@@ -73,14 +94,15 @@ class GPSImage(object):
 
     @property
     def status(self):
-        if not self.exif:
+        if not self._exif:
             return 'ERROR - Exif not found'
+        elif not self._GPSInfo:
+            return 'ERROR - No GPS Info'
         elif not self.ok:
             return 'ERROR - No Geometry'
         else:
             return 'OK'
 
-    """
     @property
     def dpi(self):
         value = self._image.info.get('dpi')
@@ -97,7 +119,6 @@ class GPSImage(object):
             y = self._divide(self.YResolution)
             if bool(x and y):
                 return (int(x), int(y))
-    """
 
     @property
     def ok(self):
@@ -106,7 +127,6 @@ class GPSImage(object):
         else:
             return False
 
-    """
     @property
     def model(self):
         return self.Model
@@ -115,22 +135,18 @@ class GPSImage(object):
     def make(self):
         return self.Make
 
-    """
-
     @property
     def datum(self):
-        datum = self.exif.get('GPS GPSMapDatum')
-        if datum:
-            return datum.values
+        if self.GPSMapDatum:
+            return self.GPSMapDatum
         else:
             return 'WGS-84'
 
     @property
     def lng(self):
-        lng_dms = self.exif.get('GPS GPSLongitude')
-        lng_ref = self.exif.get('GPS GPSLongitudeRef')
-        if bool(lng_dms and lng_ref):
-            return self._dms_to_dd(lng_dms.values, lng_ref.values)
+        lng_dms = self.GPSLongitude
+        lng_ref = self.GPSLongitudeRef
+        return self._dms_to_dd(lng_dms, lng_ref)
 
     @property
     def x(self):
@@ -138,10 +154,9 @@ class GPSImage(object):
 
     @property
     def lat(self):
-        lat_dms = self.exif.get('GPS GPSLatitude')
-        lat_ref = self.exif.get('GPS GPSLatitudeRef')
-        if bool(lat_dms and lat_ref):
-            return self._dms_to_dd(lat_dms.values, lat_ref.values)
+        lat_dms = self.GPSLatitude
+        lat_ref = self.GPSLatitudeRef
+        return self._dms_to_dd(lat_dms, lat_ref)
 
     @property
     def y(self):
@@ -149,24 +164,19 @@ class GPSImage(object):
 
     @property
     def altitude(self):
-        altitude = self.exif.get('GPS GPSAltitude')
-        if altitude:
-            return altitude.values
+        return self._divide(self.GPSAltitude)
 
     @property
     def direction(self):
-        direction = self.exif.get('GPS GPSImgDirection')
-        if direction:
-            return direction.values
+        return self._divide(self.GPSImgDirection)
 
     @property
     def timestamp(self):
         # For GoPro
-        timestamp = self.exif.get('Image DateTime')
+        timestamp = self.DateTimeOriginal.replace(':','-',2)
         if timestamp:
-            timestamp = timestamp.values.replace(':','-',2)
             return dateutil.parser.parse(timestamp)
-    """
+
     @property
     def width(self):
         return self._image.size[0]
@@ -179,7 +189,6 @@ class GPSImage(object):
     def size(self):
         if bool(self.height and self.width):
             return (self.width, self.height)
-    """
 
     @property
     def geometry(self):
@@ -188,9 +197,8 @@ class GPSImage(object):
 
     @property
     def satellites(self):
-        satellites = self.exif.get('GPS GPSSatellites').values
-        if satellites:
-            return int(satellites)
+        if self.GPSSatellites:
+            return int(self.GPSSatellites)
 
     @property
     def json(self):
@@ -203,5 +211,4 @@ class GPSImage(object):
         return container
 
 if __name__ == '__main__':
-    img = GPSImage('/home/denis/Github/gpsimage/gpsimage/images/nikon_coolpix_aw100.jpg')
-    print img.json
+    img = GPSImage('/home/denis/Pictures/2014/11/29/GOPR6059.JPG')

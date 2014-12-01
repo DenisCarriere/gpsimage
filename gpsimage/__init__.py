@@ -34,4 +34,4 @@ __license__ = 'Apache 2.0'
 __copyright__ = 'Copyright 2014 Denis Carriere'
 
 # CORE
-from api import open, image_from_data
+from .api import open

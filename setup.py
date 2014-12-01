@@ -13,8 +13,8 @@ if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist --formats=gztar upload')
     sys.exit()
 
-version = '0.0.2'
-requires = ['Pillow']
+version = '0.0.3'
+requires = ['exifread']
 
 with open('README.md') as f:
     readme = f.read()
